@@ -1,0 +1,6 @@
+{
+  "name": "CSC Digital Service Management Platform",
+  "description": "A complete digital platform for managing Common Service Center (CSC) service requests, permanent citizen document lockers, tracking status, payments, and admin verification logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,160 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role and contact information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "description": "Full display name" },
+        "email": { "type": "string", "description": "Email address" },
+        "phone": { "type": "string", "description": "Mobile number" },
+        "role": { "type": "string", "enum": ["customer", "operator", "superadmin"], "description": "User role in the system" },
+        "branch": { "type": "string", "description": "Assigned CSC branch name or ID" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "role", "createdAt"]
+    },
+    "Service": {
+      "title": "CSC Service",
+      "description": "Government or financial service available for citizens",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "description": "Service name" },
+        "category": { "type": "string", "description": "e.g., Identity, Taxes, Utility, Welfare" },
+        "fee": { "type": "number", "description": "Service fee in INR" },
+        "processingTime": { "type": "string", "description": "Expected timeframe (e.g., 3-5 working days)" },
+        "requiredDocuments": { "type": "array", "description": "List of names of documents needed" },
+        "description": { "type": "string" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["id", "name", "category", "fee", "processingTime", "requiredDocuments"]
+    },
+    "Application": {
+      "title": "Service Application",
+      "description": "Application submitted by a customer for a CSC service",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique application/tracking ID" },
+        "customerId": { "type": "string", "description": "UID of applying customer" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "Documents Required", "Under Review", "Processing", "Submitted to Government Portal", "Approved", "Rejected", "Completed"]
+        },
+        "trackingNumber": { "type": "string", "description": "Generated tracking ID" },
+        "documents": { "type": "array", "description": "List of maps representing uploaded files with URLs" },
+        "finalCertificateUrl": { "type": "string", "description": "URL of completed certificate uploaded by operator" },
+        "feesPaid": { "type": "number" },
+        "transactionId": { "type": "string" },
+        "paymentStatus": { "type": "string", "enum": ["Paid", "Unpaid", "Refunded"] },
+        "operatorNotes": { "type": "string" },
+        "operatorId": { "type": "string", "description": "UID of operator processing this" },
+        "branchId": { "type": "string" },
+        "rating": { "type": "number", "description": "1 to 5 customer satisfactory rating" },
+        "feedback": { "type": "string", "description": "Optional text feedback from customer" },
+        "feedbackDate": { "type": "string", "format": "date-time", "description": "ISO timestamp when customer submitted feedback" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerId", "serviceId", "status", "trackingNumber", "feesPaid", "paymentStatus", "createdAt"]
+    },
+    "Ticket": {
+      "title": "Support Ticket",
+      "description": "Customer issues or inquiries regarding CSC transactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "subject": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["Open", "In Progress", "Resolved"] },
+        "replies": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerId", "subject", "status", "createdAt"]
+    },
+    "VaultDocument": {
+      "title": "Vault Document",
+      "description": "Permanently stored certificate or ID in customer document vault",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "category": { "type": "string" },
+        "bytes": { "type": "number" },
+        "uploadedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerId", "name", "url", "uploadedAt"]
+    },
+    "Branch": {
+      "title": "CSC Branch",
+      "description": "CSC geographic or franchise branch information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "location": { "type": "string" },
+        "managerId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "code", "location"]
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "Platform audit logging for operations and state changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "actorId": { "type": "string" },
+        "actorName": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "actorId", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User accounts data"
+    },
+    "services/{serviceId}": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "Services list"
+    },
+    "applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/Application" },
+      "description": "Citizen service applications"
+    },
+    "tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/Ticket" },
+      "description": "In-app citizen support queries"
+    },
+    "vault/{documentId}": {
+      "schema": { "$ref": "#/entities/VaultDocument" },
+      "description": "Customer permanent document locker"
+    },
+    "branches/{branchId}": {
+      "schema": { "$ref": "#/entities/Branch" },
+      "description": "Franchise geographic branches"
+    },
+    "auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "System-wide tracking logs"
+    }
+  }
+}
